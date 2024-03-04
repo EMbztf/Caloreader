@@ -1,7 +1,6 @@
 package com.example.dockertest.repository;
 
-import com.example.dockertest.model.Exercise;
-import com.example.dockertest.model.MuscleGroup;
+import com.example.dockertest.model.dao.MuscleGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.example.dockertest.controller;
 
-import com.example.dockertest.model.LoginRequest;
-import com.example.dockertest.model.MessageResponse;
-import com.example.dockertest.model.User;
+import com.example.dockertest.model.request.LoginRequest;
+import com.example.dockertest.model.response.MessageResponse;
+import com.example.dockertest.model.dao.User;
 import com.example.dockertest.repository.UserRepository;
 import com.example.dockertest.security.jwt.JwtUtils;
 import com.example.dockertest.security.services.UserDetailsImpl;

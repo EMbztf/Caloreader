@@ -1,4 +1,4 @@
-package com.example.dockertest.model;
+package com.example.dockertest.model.dao;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

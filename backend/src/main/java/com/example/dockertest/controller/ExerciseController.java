@@ -1,8 +1,11 @@
 package com.example.dockertest.controller;
 
-import com.example.dockertest.model.Exercise;
-import com.example.dockertest.model.MuscleGroup;
-import com.example.dockertest.model.TrainingSessionRequest;
+import com.example.dockertest.model.dao.Exercise;
+import com.example.dockertest.model.dao.MuscleGroup;
+import com.example.dockertest.model.dao.Stretch;
+import com.example.dockertest.model.dao.Warmup;
+import com.example.dockertest.model.request.TrainingSessionRequest;
+import com.example.dockertest.model.response.TrainingSessionResponse;
 import com.example.dockertest.repository.ExerciseRepository;
 import com.example.dockertest.repository.MuscleGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,72 +25,88 @@ public class ExerciseController {
     @Autowired
     MuscleGroupRepository muscleGroupRepository;
 
-    @GetMapping("/trainingSession")
-    public ResponseEntity<List<Exercise>> getAllExercises(@RequestBody TrainingSessionRequest request) {
+    @PostMapping("/test")
+    public ResponseEntity<String> testPostRequest() {
+        return ResponseEntity.ok("POST request successful");
+    }
+
+    @PostMapping("/previewTrainingSessions")
+    public ResponseEntity<TrainingSessionResponse> postPreviewTrainingSessions(@RequestBody TrainingSessionRequest request) {
         try {
             validateTrainingSessionRequest(request);
             Optional<MuscleGroup> muscleGroup = muscleGroupRepository.findById(request.getMuscleGroupId());
-            List<Exercise> sessionExercises = new ArrayList<>();
+            TrainingSessionResponse response = null;
             if(muscleGroup.isPresent()) {
                 Set<Exercise> exercises = muscleGroup.get().getExercises();
                 if (exercises.isEmpty()) {
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 }
 
-                double usedCalories = 0;
-                while (usedCalories <= request.getCalories()) {
-                    int randomIndex = ThreadLocalRandom.current().nextInt(exercises.size()); // Get a random index
-                    Exercise randomExercise = exercises.stream()
-                      .skip(randomIndex)
-                      .findFirst()
-                      .orElse(null); // Get the element at the random index
-                    if(randomExercise == null) {
-                        break;
-                    }
-                    if(randomExercise.isBothSides()) {
-                        Exercise leftExercise = new Exercise(randomExercise.getName() + " left", randomExercise.getMET(), randomExercise.getDuration(), randomExercise.getRepetitions(), randomExercise.getVideoPath(), randomExercise.isBothSides());
-                        Exercise rightExercise = new Exercise(randomExercise.getName() + " right", randomExercise.getMET(), randomExercise.getDuration(), randomExercise.getRepetitions(), randomExercise.getVideoPath(), randomExercise.isBothSides());
-                        sessionExercises.add(leftExercise);
-                        sessionExercises.add(rightExercise);
-                    } else {
-                        sessionExercises.add(randomExercise);
-                    }
+                List<Warmup> warmups = muscleGroup.get().getWarmups().stream().toList();
+                List<Stretch> stretches = muscleGroup.get().getStretches().stream().toList();
+                List<Exercise> sessionExercises = getTrainingSessionExercises(request, exercises);
+                double estimatedTime = calculateEstimatedTime(warmups, sessionExercises, stretches);
 
-                    for(Exercise exercise : sessionExercises) {
-                        usedCalories += getBurnedCaloriesForExercise(exercise, request.getWeight(), request.getHeight(), request.getAge(), request.getGender());
-                    }
-               }
-
-                System.out.println("Used calories: " + usedCalories);
+                response = new TrainingSessionResponse(estimatedTime, sessionExercises, warmups, stretches);
             }
 
-            return new ResponseEntity<>(sessionExercises, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-//    @GetMapping("/exercise/{id}")
-//    public ResponseEntity<Exercise> getTutorialById(@PathVariable("id") Integer id) {
-//        Optional<Exercise> exerciseData = exerciseRepository.findById(id);
-//
-//        if (exerciseData.isPresent()) {
-//            return new ResponseEntity<>(exerciseData.get(), HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//    @PostMapping(value = "/exercises")
-//    public ResponseEntity<Exercise> createTutorial(@RequestBody Exercise exercise) {
-//        try {
-//            Exercise newExercise = exerciseRepository
-//              .save(new Exercise(exercise.getName(), exercise.getDuration(), exercise.getRepetitions(), exercise.getVideoPath()));
-//            return new ResponseEntity<>(newExercise, HttpStatus.CREATED);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    private double calculateEstimatedTime(List<Warmup> warmups, List<Exercise> exercises, List<Stretch> stretches) {
+        double estimatedTime = 0;
+        double restTime = 30;
+        double stretchRestTime = 10;
+
+        for(Warmup warmup : warmups) {
+            estimatedTime += warmup.getDuration() * warmup.getRepetitions();
+        }
+
+        for(Exercise exercise : exercises) {
+            estimatedTime += exercise.getDuration() * exercise.getRepetitions();
+        }
+
+        for (Stretch stretch : stretches) {
+            estimatedTime += stretch.getDuration() * stretch.getRepetitions();
+        }
+
+        estimatedTime += warmups.size() * restTime;
+        estimatedTime += exercises.size() * restTime;
+        estimatedTime += (stretches.size() -1) * stretchRestTime;
+
+        return estimatedTime;
+    }
+
+    private List<Exercise> getTrainingSessionExercises(TrainingSessionRequest request, Set<Exercise> exercises) {
+        List<Exercise> sessionExercises = new ArrayList<>();
+        double usedCalories = 0;
+        while (usedCalories <= request.getCalories()) {
+            int randomIndex = ThreadLocalRandom.current().nextInt(exercises.size()); // Get a random index
+            Exercise randomExercise = exercises.stream()
+              .skip(randomIndex)
+              .findFirst()
+              .orElse(null); // Get the element at the random index
+            if(randomExercise == null) {
+                break;
+            }
+            if(randomExercise.isBothSides()) {
+                Exercise leftExercise = new Exercise(randomExercise.getName() + " left", randomExercise.getMET(), randomExercise.getDuration(), randomExercise.getRepetitions(), randomExercise.getVideoPath(), randomExercise.isBothSides());
+                Exercise rightExercise = new Exercise(randomExercise.getName() + " right", randomExercise.getMET(), randomExercise.getDuration(), randomExercise.getRepetitions(), randomExercise.getVideoPath(), randomExercise.isBothSides());
+                sessionExercises.add(leftExercise);
+                sessionExercises.add(rightExercise);
+            } else {
+                sessionExercises.add(randomExercise);
+            }
+
+            for(Exercise exercise : sessionExercises) {
+                usedCalories += getBurnedCaloriesForExercise(exercise, request.getWeight(), request.getHeight(), request.getAge(), request.getGender());
+            }
+        }
+        return sessionExercises;
+    }
 
     private double calculateBMR(double weight, int height, int age, String gender) {
         if(gender.equalsIgnoreCase("male")) {

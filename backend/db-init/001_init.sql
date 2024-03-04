@@ -20,6 +20,7 @@ CREATE TABLE muscle_group (
     PRIMARY KEY (id)
 );
 
+
 CREATE TABLE exercise (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
@@ -80,6 +81,23 @@ CREATE TABLE muscle_group_2_stretch (
     FOREIGN KEY (stretch_id) REFERENCES stretch(id)
 );
 
+CREATE TABLE training_session (
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    date DATE NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE training_session_2_exercise (
+    id INT NOT NULL AUTO_INCREMENT,
+    training_session_id INT NOT NULL,
+    exercise_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (training_session_id) REFERENCES training_session(id),
+    FOREIGN KEY (exercise_id) REFERENCES exercise(id)
+);
+
 INSERT INTO users
     (username, password, sex, height, weight, age)
 VALUES
@@ -122,8 +140,8 @@ VALUES
 INSERT INTO stretch
     (name, MET, duration, repetitions, video_path, both_sides)
 VALUES
-    ('Cobra Stretch', 7, 1, 30, 'cobra-stretch.mp4', false),
-    ('Spine Lumber twist', 6, 1, 30, 'spine-lumber-twist.mp4', true);
+    ('Cobra Stretch', 7, 30, 1, 'cobra-stretch.mp4', false),
+    ('Spine Lumber twist', 6, 30, 1, 'spine-lumber-twist.mp4', true);
 
 -- Abs muscle group exercises
 INSERT INTO muscle_group_2_exercise

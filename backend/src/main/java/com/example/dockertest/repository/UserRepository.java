@@ -1,6 +1,6 @@
 package com.example.dockertest.repository;
 
-import com.example.dockertest.model.User;
+import com.example.dockertest.model.dao.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

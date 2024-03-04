@@ -1,6 +1,6 @@
 package com.example.dockertest.security.services;
 
-import com.example.dockertest.model.User;
+import com.example.dockertest.model.dao.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

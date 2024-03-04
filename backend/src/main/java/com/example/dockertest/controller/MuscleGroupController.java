@@ -1,6 +1,6 @@
 package com.example.dockertest.controller;
 
-import com.example.dockertest.model.MuscleGroup;
+import com.example.dockertest.model.dao.MuscleGroup;
 import com.example.dockertest.repository.MuscleGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

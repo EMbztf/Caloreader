@@ -1,4 +1,4 @@
-package com.example.dockertest.model;
+package com.example.dockertest.model.response;
 
 public class MessageResponse {
     private String message;

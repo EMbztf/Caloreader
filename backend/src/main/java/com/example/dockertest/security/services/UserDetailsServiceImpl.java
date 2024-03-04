@@ -1,6 +1,6 @@
 package com.example.dockertest.security.services;
 
-import com.example.dockertest.model.User;
+import com.example.dockertest.model.dao.User;
 import com.example.dockertest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

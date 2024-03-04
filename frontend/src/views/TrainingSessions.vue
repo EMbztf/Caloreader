@@ -5,9 +5,9 @@
         <v-toolbar title="Workouts">
         </v-toolbar>
         <v-card-text>
-          <v-container v-for="trainingSession in trainingSessions">
-            <v-card-item :prepend-avatar="BACKEND_URL + '/api/images/' + trainingSession.imagePath" @click="openGenerateTrainingSessionDialog()">
-              <v-card-title>{{ trainingSession.name }}</v-card-title>
+          <v-container v-for="muscleGroup in muscleGroups">
+            <v-card-item :prepend-avatar="BACKEND_URL + '/api/images/' + muscleGroup.imagePath" @click="openGenerateTrainingSessionDialog(muscleGroup)">
+              <v-card-title>{{ muscleGroup.name }}</v-card-title>
             </v-card-item>
             <v-divider></v-divider>
           </v-container>
@@ -20,13 +20,13 @@
       >
         <v-card>
           <v-card-title>
-            Change Username
+            Calories to burn
           </v-card-title>
           <v-card-text>
             <v-form @submit.prevent="" ref="generateTrainingSessionForm">
               <v-text-field
                   v-model="caloriesToBurn"
-                  label="Calories to burn"
+                  label="Calories"
                   variant="underlined"
                   type="number"
                   :rules="caloriesToBurnRules"
@@ -40,6 +40,76 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <v-dialog
+          v-model="previewTrainingSessionDialog"
+          transition="dialog-bottom-transition"
+          fullscreen
+      >
+        <v-card>
+          <v-toolbar>
+            <v-btn
+                icon="mdi-chevron-left"
+                @click="closePreviewTrainingSessionDialog"
+            ></v-btn>
+
+            <v-toolbar-title>{{ selectedMuscleGroup.name }}</v-toolbar-title>
+            <v-card-subtitle>{{ 'Estimated Time: ' + estimatedTime }}</v-card-subtitle>
+          </v-toolbar>
+
+          <v-card-title>
+            Exercises ({{ trainingSession.exercises.length + trainingSession.warmups.length + trainingSession.stretches.length }})
+          </v-card-title>
+          <v-card-text>
+            <v-card-item v-for="warmup in trainingSession.warmups">
+              <v-card-title>
+                {{ warmup.name }}
+              </v-card-title>
+              <v-card-subtitle>
+                {{ warmup.repetitions > 1 ? 'x ' + warmup.repetitions : this.formatTime(warmup.duration) }}
+              </v-card-subtitle>
+            </v-card-item>
+            <v-card-item v-for="exercise in trainingSession.exercises">
+              <v-card-title>
+                {{ exercise.name }}
+              </v-card-title>
+              <v-card-subtitle>
+                {{ exercise.repetitions > 1 ? 'x ' + exercise.repetitions : this.formatTime(exercise.duration) }}
+              </v-card-subtitle>
+            </v-card-item>
+            <v-card-item v-for="stretch in trainingSession.stretches">
+              <v-card-title>
+                {{ stretch.name }}
+              </v-card-title>
+              <v-card-subtitle>
+                {{ stretch.repetitions > 1 ? 'x ' + stretch.repetitions : this.formatTime(stretch.duration) }}
+              </v-card-subtitle>
+            </v-card-item>
+<!--            two empty items to prevent bottom navigation from overlapping-->
+            <v-card-item>
+            </v-card-item>
+            <v-card-item>
+            </v-card-item>
+          </v-card-text>
+
+          <v-bottom-navigation
+              bg-color="#424242"
+          >
+            <v-btn
+                class="bg-orange-darken-3"
+                @click="generateTrainingSession()"
+            >
+              <v-icon>mdi-refresh</v-icon>
+              Refresh Session
+            </v-btn>
+
+            <v-btn class="bg-green">
+              <v-icon>mdi-play</v-icon>
+              Start Session
+            </v-btn>
+          </v-bottom-navigation>
+        </v-card>
+      </v-dialog>
     </v-row>
   </v-container>
 </template>
@@ -50,15 +120,36 @@ import axios from "axios";
 export default {
   data() {
     return {
-      trainingSessions: [],
+      muscleGroups: [],
+      estimatedTime: '',
+      trainingSession: {
+        estimatedTime: 0,
+        exercises: [],
+        warmups: [],
+        stretches: [],
+      },
+      // exercises: [],
       BACKEND_URL: import.meta.env.VITE_BACKEND_URL,
       generateTrainingSessionDialog: false,
+      previewTrainingSessionDialog: false,
       caloriesToBurn: null,
       caloriesToBurnRules: [
         v => !!v || 'Calories to burn is required',
       ],
       caloriesToBurnErrors: '',
+      selectedMuscleGroup: {
+        name: '',
+        imagePath: '',
+      },
     };
+  },
+
+  watch:{
+    generateTrainingSessionDialog: function() {
+      if (!this.generateTrainingSessionDialog) {
+        this.caloriesToBurn = null
+      }
+    }
   },
 
   setup() {
@@ -73,27 +164,53 @@ export default {
     async loadMuscleGroups() {
       const url = import.meta.env.VITE_BACKEND_URL + '/api/muscleGroups';
       axios.get(url).then((response) => {
-        this.trainingSessions = response.data;
+        this.muscleGroups = response.data;
       })
     },
 
     async generateTrainingSession() {
-      // const url = import.meta.env.VITE_BACKEND_URL + '/api/trainingSessions';
-      // axios.post(url, {
-      //   caloriesToBurn: this.caloriesToBurn,
-      // }).then((response) => {
-      //   this.trainingSessions = response.data;
-      // })
+      const url = import.meta.env.VITE_BACKEND_URL + '/api/previewTrainingSessions';
+
+      axios.post(url, {
+          calories: this.caloriesToBurn,
+          muscleGroupId: this.selectedMuscleGroup.id,
+          weight: 75,
+          height: 182,
+          age: 19,
+          gender: "male"
+      }).then((response) => {
+        this.trainingSession = response.data;
+        this.estimatedTime = this.formatTime(this.trainingSession.estimatedTime);
+        this.openPreviewTrainingSessionDialog();
+      })
     },
 
-    openGenerateTrainingSessionDialog() {
-      console.log("opening dialog");
+    formatTime(seconds) {
+      let minutes = Math.floor(seconds / 60); // Finds the whole minutes
+      let remainingSeconds = seconds % 60; // Finds the remaining seconds
+
+      // Formats the minutes and seconds to always display two digits
+      let formattedMinutes = String(minutes).padStart(2, '0');
+      let formattedSeconds = String(remainingSeconds).padStart(2, '0');
+
+      return `${formattedMinutes}:${formattedSeconds}`;
+    },
+
+    openPreviewTrainingSessionDialog() {
+      this.previewTrainingSessionDialog = true;
+    },
+
+    closePreviewTrainingSessionDialog() {
+      this.previewTrainingSessionDialog = false;
+    },
+
+    openGenerateTrainingSessionDialog(muscleGroup) {
       this.generateTrainingSessionDialog = true;
+      this.selectedMuscleGroup = muscleGroup;
     },
 
     closeGenerateTrainingSessionDialog() {
       this.generateTrainingSessionDialog = false;
-      this.caloriesToBurn = null;
     }
   },
 

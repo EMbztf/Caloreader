@@ -1,4 +1,4 @@
-package com.example.dockertest.model;
+package com.example.dockertest.model.request;
 
 public class LoginRequest {
     private String username;
