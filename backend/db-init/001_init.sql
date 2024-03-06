@@ -20,7 +20,6 @@ CREATE TABLE muscle_group (
     PRIMARY KEY (id)
 );
 
-
 CREATE TABLE exercise (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
@@ -28,7 +27,7 @@ CREATE TABLE exercise (
     duration DOUBLE NOT NULL,
     repetitions INT NOT NULL,
     video_path VARCHAR(255) NOT NULL,
-    both_sides BOOLEAN NOT NULL,
+    sibling_exercise_id INT,
     PRIMARY KEY (id)
 );
 
@@ -39,7 +38,7 @@ CREATE TABLE warmup (
     duration DOUBLE NOT NULL,
     repetitions INT NOT NULL,
     video_path VARCHAR(255) NOT NULL,
-    both_sides BOOLEAN NOT NULL,
+    sibling_warmup_id INT,
     PRIMARY KEY (id)
 );
 
@@ -50,7 +49,7 @@ CREATE TABLE stretch (
     duration DOUBLE NOT NULL,
     repetitions INT NOT NULL,
     video_path VARCHAR(255) NOT NULL,
-    both_sides BOOLEAN NOT NULL,
+    sibling_stretch_id INT,
     PRIMARY KEY (id)
 );
 
@@ -115,33 +114,36 @@ VALUES
 
 -- Abs warmups
 INSERT INTO warmup
-    (name, MET, duration, repetitions, video_path, both_sides)
+    (name, MET, duration, repetitions, video_path, sibling_warmup_id)
 VALUES
-    ('Jumping Jacks', 2.0, 30.0, 1, 'jump-jacks.mp4', false);
+    ('Jumping Jacks', 2.0, 30.0, 1, 'jump-jacks.mp4', null);
 
 -- Abs exercises
 INSERT INTO exercise
-    (name, MET, duration, repetitions, video_path, both_sides)
+    (name, MET, duration, repetitions, video_path, sibling_exercise_id)
 VALUES
-    ('Sit-ups', 5.0, 3.0, 20, 'sit-ups.mp4', false),
-    ('Side planks', 5.0, 20.0, 1, 'side-planks.mp4', true),
-    ('Abdominal crunches', 6.0, 3.0, 30, 'abdominal-crunches.mp4', false),
-    ('Bicycle crunches', 6, 3, 24, 'push-ups.mp4', false),
-    ('Side bridges', 5, 3, 20, 'side-bridges.mp4', true),
-    ('V-up', 7, 3, 18, 'v-up.mp4', false),
-    ('Push-up & rotation', 8, 3, 24, 'push-up-and-rotation.mp4', false),
-    ('Russian Twist', 6, 2, 48, 'russian-twist.mp4', false),
-    ('Butt Bridge', 5, 3, 30, 'butt-bridge.mp4', false),
-    ('Heel touch', 6, 2, 34, 'heel-touch.mp4', false),
-    ('Mountain climber', 5, 1, 30, 'mountain-climber.mp4', false),
-    ('Crossover crunch', 6, 3, 30, 'crossover-crunch.mp4', false);
+    ('Side planks left', 5.0, 20.0, 1, 'side-planks-left.mp4', 2),
+    ('Side planks right', 5.0, 20.0, 1, 'side-planks-right.mp4', 1),
+    ('Side bridges left', 5, 3, 20, 'side-bridges-left.mp4', 3),
+    ('Side bridges right', 5, 3, 20, 'side-bridges-right.mp4', 4),
+    ('Sit-ups', 5.0, 3.0, 20, 'sit-ups.mp4', null),
+    ('Abdominal crunches', 6.0, 3.0, 30, 'abdominal-crunches.mp4', null),
+    ('Bicycle crunches', 6, 3, 24, 'push-ups.mp4', null),
+    ('V-up', 7, 3, 18, 'v-up.mp4', null),
+    ('Push-up & rotation', 8, 3, 24, 'push-up-and-rotation.mp4', null),
+    ('Russian Twist', 6, 2, 48, 'russian-twist.mp4', null),
+    ('Butt Bridge', 5, 3, 30, 'butt-bridge.mp4', null),
+    ('Heel touch', 6, 2, 34, 'heel-touch.mp4', null),
+    ('Mountain climber', 5, 1, 30, 'mountain-climber.mp4', null),
+    ('Crossover crunch', 6, 3, 30, 'crossover-crunch.mp4', null);
 
 -- Abs stretches
 INSERT INTO stretch
-    (name, MET, duration, repetitions, video_path, both_sides)
+    (name, MET, duration, repetitions, video_path, sibling_stretch_id)
 VALUES
-    ('Cobra Stretch', 7, 30, 1, 'cobra-stretch.mp4', false),
-    ('Spine Lumber twist', 6, 30, 1, 'spine-lumber-twist.mp4', true);
+    ('Spine Lumber twist left', 6, 30, 1, 'spine-lumber-twist-left.mp4', 2),
+    ('Spine Lumber twist right', 6, 30, 1, 'spine-lumber-twist-right.mp4', 1),
+    ('Cobra Stretch', 7, 30, 1, 'cobra-stretch.mp4', false);
 
 -- Abs muscle group exercises
 INSERT INTO muscle_group_2_exercise

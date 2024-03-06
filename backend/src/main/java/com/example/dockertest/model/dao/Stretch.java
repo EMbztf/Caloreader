@@ -26,8 +26,8 @@ public class Stretch {
     @Column(name = "video_path")
     private String videoPath;
 
-    @Column(name = "both_sides")
-    private boolean bothSides;
+    @Column(name = "sibling_stretch_id")
+    private Integer siblingStretchId;
 
     @ManyToMany(mappedBy = "stretches")
     private Set<MuscleGroup> muscleGroups;
@@ -36,13 +36,13 @@ public class Stretch {
 
     }
 
-    public Stretch(String name, double MET, double duration, int repetitions, String videoPath, boolean bothSides) {
+    public Stretch(String name, double MET, double duration, int repetitions, String videoPath, Integer siblingStretchId) {
         this.name = name;
         this.MET = MET;
         this.duration = duration;
         this.repetitions = repetitions;
         this.videoPath = videoPath;
-        this.bothSides = bothSides;
+        this.siblingStretchId = siblingStretchId;
     }
 
     public Integer getId() {
@@ -93,11 +93,19 @@ public class Stretch {
         this.videoPath = videoPath;
     }
 
-    public boolean isBothSides() {
-        return bothSides;
+    public Integer getSiblingStretchId() {
+        return siblingStretchId;
     }
 
-    public void setBothSides(boolean bothSides) {
-        this.bothSides = bothSides;
+    public void setSiblingStretchId(Integer siblingStretchId) {
+        this.siblingStretchId = siblingStretchId;
+    }
+
+    public Set<MuscleGroup> getMuscleGroups() {
+        return muscleGroups;
+    }
+
+    public void setMuscleGroups(Set<MuscleGroup> muscleGroups) {
+        this.muscleGroups = muscleGroups;
     }
 }

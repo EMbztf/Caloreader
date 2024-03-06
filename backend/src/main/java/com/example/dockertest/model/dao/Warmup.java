@@ -26,8 +26,8 @@ public class Warmup {
     @Column(name = "video_path")
     private String videoPath;
 
-    @Column(name = "both_sides")
-    private boolean bothSides;
+    @Column(name = "sibling_warmup_id")
+    private Integer siblingWarmupId;
 
     @ManyToMany(mappedBy = "warmups")
     private Set<MuscleGroup> muscleGroups;
@@ -36,13 +36,13 @@ public class Warmup {
 
     }
 
-    public Warmup(String name, double MET, double duration, int repetitions, String videoPath, boolean bothSides) {
+    public Warmup(String name, double MET, double duration, int repetitions, String videoPath, Integer siblingWarmupId) {
         this.name = name;
         this.MET = MET;
         this.duration = duration;
         this.repetitions = repetitions;
         this.videoPath = videoPath;
-        this.bothSides = bothSides;
+        this.siblingWarmupId = siblingWarmupId;
     }
 
     public Integer getId() {
@@ -93,11 +93,19 @@ public class Warmup {
         this.videoPath = videoPath;
     }
 
-    public boolean isBothSides() {
-        return bothSides;
+    public Integer getSiblingWarmupId() {
+        return siblingWarmupId;
     }
 
-    public void setBothSides(boolean bothSides) {
-        this.bothSides = bothSides;
+    public void setSiblingWarmupId(Integer siblingWarmupId) {
+        this.siblingWarmupId = siblingWarmupId;
+    }
+
+    public Set<MuscleGroup> getMuscleGroups() {
+        return muscleGroups;
+    }
+
+    public void setMuscleGroups(Set<MuscleGroup> muscleGroups) {
+        this.muscleGroups = muscleGroups;
     }
 }

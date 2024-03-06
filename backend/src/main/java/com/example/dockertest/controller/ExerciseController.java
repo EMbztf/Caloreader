@@ -44,6 +44,10 @@ public class ExerciseController {
 
                 List<Warmup> warmups = muscleGroup.get().getWarmups().stream().toList();
                 List<Stretch> stretches = muscleGroup.get().getStretches().stream().toList();
+
+                double defaultCalories = calculateCaloriesForWarmupsAndStretches(warmups, stretches, request);
+                request.setCalories((int) (request.getCalories() - defaultCalories));
+
                 List<Exercise> sessionExercises = getTrainingSessionExercises(request, exercises);
                 double estimatedTime = calculateEstimatedTime(warmups, sessionExercises, stretches);
 
@@ -83,27 +87,27 @@ public class ExerciseController {
     private List<Exercise> getTrainingSessionExercises(TrainingSessionRequest request, Set<Exercise> exercises) {
         List<Exercise> sessionExercises = new ArrayList<>();
         double usedCalories = 0;
+        Exercise previousExercise = null;
         while (usedCalories <= request.getCalories()) {
             int randomIndex = ThreadLocalRandom.current().nextInt(exercises.size()); // Get a random index
             Exercise randomExercise = exercises.stream()
               .skip(randomIndex)
               .findFirst()
               .orElse(null); // Get the element at the random index
-            if(randomExercise == null) {
-                break;
+            if(randomExercise == null || previousExercise != null && previousExercise.getId().equals(randomExercise.getId())) {
+                continue;
             }
-            if(randomExercise.isBothSides()) {
-                Exercise leftExercise = new Exercise(randomExercise.getName() + " left", randomExercise.getMET(), randomExercise.getDuration(), randomExercise.getRepetitions(), randomExercise.getVideoPath(), randomExercise.isBothSides());
-                Exercise rightExercise = new Exercise(randomExercise.getName() + " right", randomExercise.getMET(), randomExercise.getDuration(), randomExercise.getRepetitions(), randomExercise.getVideoPath(), randomExercise.isBothSides());
-                sessionExercises.add(leftExercise);
-                sessionExercises.add(rightExercise);
-            } else {
-                sessionExercises.add(randomExercise);
-            }
+            sessionExercises.add(randomExercise);
 
-            for(Exercise exercise : sessionExercises) {
-                usedCalories += getBurnedCaloriesForExercise(exercise, request.getWeight(), request.getHeight(), request.getAge(), request.getGender());
+            if(randomExercise.getSiblingExerciseId() != null) {
+                Exercise siblingExercise = exerciseRepository.findById(randomExercise.getSiblingExerciseId()).orElse(null);
+                if(siblingExercise != null) {
+                    usedCalories += calculateBurnedCalories(siblingExercise.getMET(), siblingExercise.getDuration(), siblingExercise.getRepetitions(),request);
+                    sessionExercises.add(siblingExercise);
+                }
             }
+            usedCalories += calculateBurnedCalories(randomExercise.getMET(), randomExercise.getDuration(), randomExercise.getRepetitions(), request);
+            previousExercise = randomExercise;
         }
         return sessionExercises;
     }
@@ -125,6 +129,22 @@ public class ExerciseController {
     private double getBurnedCaloriesForExercise(Exercise exercise, double weight, int height, int age, String gender) {
         double correctedMET = calculateCorrectedMET(exercise.getMET(), weight, height, age, gender);
         return correctedMET * 3.5 * weight / 200 * exercise.getDuration() * exercise.getRepetitions() / 60;
+    }
+
+    private double calculateBurnedCalories(double met, double duration, int repetitions, TrainingSessionRequest request) {
+        double correctedMET = calculateCorrectedMET(met, request.getWeight(), request.getHeight(), request.getAge(), request.getGender());
+        return correctedMET * 3.5 * request.getWeight() / 200 * duration * repetitions / 60;
+    }
+
+    private double calculateCaloriesForWarmupsAndStretches(List<Warmup> warmups, List<Stretch> stretches, TrainingSessionRequest request) {
+        double totalCalories = 0;
+        for(Warmup warmup : warmups) {
+            totalCalories += calculateBurnedCalories(warmup.getMET(), warmup.getDuration(), warmup.getRepetitions(), request);
+        }
+        for(Stretch stretch : stretches) {
+            totalCalories += calculateBurnedCalories(stretch.getMET(), stretch.getDuration(), stretch.getRepetitions(), request);
+        }
+        return totalCalories;
     }
 
     private void validateTrainingSessionRequest(TrainingSessionRequest request) {
