@@ -1,7 +1,9 @@
 package com.example.dockertest.model.dao;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Entity
 @Table(name = "users",
@@ -19,6 +21,7 @@ public class User {
 
     @NotBlank
     @Column(name = "password")
+    @JsonIgnore
     private String password;
 
     @NotBlank
@@ -36,6 +39,10 @@ public class User {
     @NotBlank
     @Column(name = "age")
     private int age;
+
+    @OneToMany(mappedBy="user")
+    @JsonIgnore
+    private Set<TrainingSession> trainingSessions;
 
     public User() {
     }

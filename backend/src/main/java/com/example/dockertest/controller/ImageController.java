@@ -36,15 +36,6 @@ public class ImageController {
         }
     }
 
-//    public Path loadResourceAsPath(String resourceLocation) {
-//        Resource resource = resourceLoader.getResource(resourceLocation);
-//        try {
-//            return Paths.get(resource.getURI());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
     @GetMapping("/images/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {

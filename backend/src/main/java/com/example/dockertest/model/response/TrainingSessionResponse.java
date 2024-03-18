@@ -1,18 +1,16 @@
 package com.example.dockertest.model.response;
 
 import com.example.dockertest.model.dao.Exercise;
-import com.example.dockertest.model.dao.Stretch;
-import com.example.dockertest.model.dao.Warmup;
 
 import java.util.List;
 
 public class TrainingSessionResponse {
     private double estimatedTime;
     private List<Exercise> exercises;
-    private List<Warmup> warmups;
-    private List<Stretch> stretches;
+    private List<Exercise> warmups;
+    private List<Exercise> stretches;
 
-    public TrainingSessionResponse(double estimatedTime, List<Exercise> exercises, List<Warmup> warmups, List<Stretch> stretches) {
+    public TrainingSessionResponse(double estimatedTime, List<Exercise> exercises, List<Exercise> warmups, List<Exercise> stretches) {
         this.estimatedTime = estimatedTime;
         this.exercises = exercises;
         this.warmups = warmups;
@@ -35,19 +33,19 @@ public class TrainingSessionResponse {
         this.exercises = exercises;
     }
 
-    public List<Warmup> getWarmups() {
+    public List<Exercise> getWarmups() {
         return warmups;
     }
 
-    public void setWarmups(List<Warmup> warmups) {
+    public void setWarmups(List<Exercise> warmups) {
         this.warmups = warmups;
     }
 
-    public List<Stretch> getStretches() {
+    public List<Exercise> getStretches() {
         return stretches;
     }
 
-    public void setStretches(List<Stretch> stretches) {
+    public void setStretches(List<Exercise> stretches) {
         this.stretches = stretches;
     }
 }

@@ -103,7 +103,10 @@
               Refresh Session
             </v-btn>
 
-            <v-btn class="bg-green">
+            <v-btn
+                class="bg-green"
+                @click="storeTrainingSession()"
+            >
               <v-icon>mdi-play</v-icon>
               Start Session
             </v-btn>
@@ -158,6 +161,7 @@ export default {
 
   mounted() {
     this.loadMuscleGroups();
+    axios.defaults.withCredentials = true;
   },
 
   methods: {
@@ -174,15 +178,27 @@ export default {
       axios.post(url, {
           calories: this.caloriesToBurn,
           muscleGroupId: this.selectedMuscleGroup.id,
-          weight: 75,
-          height: 182,
-          age: 19,
-          gender: "male"
       }).then((response) => {
         this.trainingSession = response.data;
         this.estimatedTime = this.formatTime(this.trainingSession.estimatedTime);
         this.openPreviewTrainingSessionDialog();
       })
+    },
+
+    async storeTrainingSession() {
+      const url = import.meta.env.VITE_BACKEND_URL + '/api/trainingSessions';
+      let exercisesIds = this.trainingSession.warmups.map((warmup) => warmup.id);
+      exercisesIds = exercisesIds.concat(this.trainingSession.exercises.map((exercise) => exercise.id));
+      exercisesIds = exercisesIds.concat(this.trainingSession.stretches.map((stretch) => stretch.id));
+      const trainingSessionBody = {
+        calories: this.caloriesToBurn,
+        muscleGroupId: this.selectedMuscleGroup.id,
+        exercises: exercisesIds
+      };
+
+      axios.post(url, trainingSessionBody).then((response) => {
+        this.$router.push("/trainingSession/" + response.data.id);
+      });
     },
 
     formatTime(seconds) {

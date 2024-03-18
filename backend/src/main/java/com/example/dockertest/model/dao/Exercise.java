@@ -29,6 +29,12 @@ public class Exercise {
     @Column(name = "sibling_exercise_id")
     private Integer siblingExerciseId;
 
+    @Column(name = "warmup")
+    private boolean warmup;
+
+    @Column(name = "stretch")
+    private boolean stretch;
+
     @ManyToMany(mappedBy = "exercises")
     private Set<MuscleGroup> muscleGroups;
 
@@ -99,6 +105,22 @@ public class Exercise {
 
     public void setSiblingExerciseId(Integer siblingExerciseId) {
         this.siblingExerciseId = siblingExerciseId;
+    }
+
+    public boolean isWarmup() {
+        return warmup;
+    }
+
+    public void setWarmup(boolean warmup) {
+        this.warmup = warmup;
+    }
+
+    public boolean isStretch() {
+        return stretch;
+    }
+
+    public void setStretch(boolean stretch) {
+        this.stretch = stretch;
     }
 
     public Set<MuscleGroup> getMuscleGroups() {

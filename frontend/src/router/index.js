@@ -1,43 +1,30 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Friends from "../views/Friends.vue";
 import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
-import TrainingSessions from "@/views/TrainingSessions.vue";
-import { storeToRefs } from "pinia";
-import { useUserStore } from "../stores/users";
-import { useServerStore } from "../stores/servers";
+import TrainingSessionGenerator from "@/views/TrainingSessionGenerator.vue";
+import TrainingSession from "../views/TrainingSession.vue";
+import PreviousTrainingSessions from "../views/PreviousTrainingSessions.vue";
+import NotFound from "../views/NotFound.vue";
+import Profile from "../views/Profile.vue";
+import axios from "axios";
 
-function isAuthenticated() {
-  const {
-      isAuthenticated,
-  } = storeToRefs( useUserStore() );
-  return isAuthenticated.value;
-}
+async function isAuthenticated() {
+  const url = import.meta.env.VITE_BACKEND_URL + '/api/check';
+  try {
+    axios.defaults.withCredentials = true;
+    const response = await axios.get(url);
 
-function getCurrentUserId() {
-  const {
-      id,
-  } = storeToRefs(useUserStore());
-  return id.value;
-}
-
-function checkAuth(to, from, next) {
-  if (isAuthenticated()) {
-    next();
-  } else {
-    next('/login');
+    return response.status === 200;
+  } catch (error) {
+    return false;
   }
 }
 
-function checkIfCurrentUserIsOwnerFromServer(serverId, next, from) {
-  const {
-    getServerById,
-  } = useServerStore();
-  const server = getServerById(serverId);
-  if (server !== undefined && server.owner_id === getCurrentUserId()) {
+async function checkAuth(to, from, next) {
+  if (await isAuthenticated()) {
     next();
   } else {
-    next(from.path);
+    next('/login');
   }
 }
 
@@ -46,12 +33,25 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/',
+      redirect: '/trainingSessionGenerator',
+    },
+    {
+      path: '/404',
+      name: 'PageNotExist',
+      component: NotFound,
+    },
+    {
+      path: "/:catchAll(.*)", // Unrecognized path automatically matches 404
+      redirect: '/404',
+    },
+    {
       path: "/login",
       name: "login",
       component: Login,
-      beforeEnter: (to, from, next) => {
-        if (isAuthenticated()) {
-          next('/friends');
+      beforeEnter: async (to, from, next) => {
+        if (await isAuthenticated()) {
+          next('/trainingSessionGenerator');
         } else {
           next();
         }
@@ -63,16 +63,35 @@ const router = createRouter({
       component: Signup,
     },
     {
-      path: "/trainingSession",
-      name: "trainingSession",
-      component: TrainingSessions,
+      path: "/trainingSessions",
+      name: "trainingSessions",
+      component: PreviousTrainingSessions,
+      beforeEnter: async (to, from, next) => {
+        await checkAuth(to, from, next);
+      },
     },
     {
-      path: "/friends",
-      name: "friends",
-      component: Friends,
-      beforeEnter: (to, from, next) => {
-        checkAuth(to, from, next);
+      path: "/trainingSession/:id",
+      name: "trainingSession",
+      component: TrainingSession,
+      beforeEnter: async (to, from, next) => {
+        await checkAuth(to, from, next);
+      },
+    },
+    {
+      path: "/trainingSessionGenerator",
+      name: "trainingSessionGenerator",
+      component: TrainingSessionGenerator,
+      beforeEnter: async (to, from, next) => {
+        await checkAuth(to, from, next);
+      },
+    },
+    {
+      path: "/profile",
+      name: "profile",
+      component: Profile,
+      beforeEnter: async (to, from, next) => {
+        await checkAuth(to, from, next);
       },
     },
   ],

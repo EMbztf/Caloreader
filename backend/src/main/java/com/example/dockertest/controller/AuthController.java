@@ -61,7 +61,6 @@ public class AuthController {
         user.setPassword(encoder.encode(user.getPassword()));
 
         userRepository.save(user);
-
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 

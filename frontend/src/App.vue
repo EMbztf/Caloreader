@@ -1,21 +1,18 @@
 <template>
   <v-app>
-    <v-app-bar color="dark grey" density="compact">
+<!--    <v-app-bar color="dark grey" density="compact">-->
 
-      <v-toolbar-title>Calorie Tracker</v-toolbar-title>
+<!--      <v-toolbar-title>Calorie Tracker</v-toolbar-title>-->
 
-      <v-toolbar-items>
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn v-bind="props" icon="mdi-theme-light-dark" @click="toggleTheme"></v-btn>
-          </template>
-        </v-menu>
-        <v-btn v-if="isUserAuthenticated" icon="mdi-logout" @click="logout()"></v-btn>
-        <v-btn v-if="!isUserAuthenticated" icon="mdi-account-plus" @click="goToRegister()"></v-btn>
-      </v-toolbar-items>
-    </v-app-bar>
-
-    <ServerNavDrawer v-if="isUserAuthenticated"/>
+<!--      <v-toolbar-items>-->
+<!--        <v-menu>-->
+<!--          <template #activator="{ props }">-->
+<!--            <v-btn v-bind="props" icon="mdi-theme-light-dark" @click="toggleTheme"></v-btn>-->
+<!--          </template>-->
+<!--        </v-menu>-->
+<!--      </v-toolbar-items>-->
+<!--    </v-app-bar>-->
+    <AppBar/>
 
     <v-snackbar
       v-model="errors.errorSnackbar"
@@ -44,11 +41,12 @@ import { useTheme } from 'vuetify'
 import { useErrorStore } from "@/stores/errors"
 import { storeToRefs } from "pinia";
 import { useUserStore } from "./stores/users";
+import AppBar from "./components/AppBar.vue";
 import ServerNavDrawer from "./components/ServerNavDrawer.vue";
 
 export default {
 
-  components: { ServerNavDrawer },
+  components: { AppBar },
 
   data: function () {
     return {
@@ -76,16 +74,6 @@ export default {
 
     return { closeSnackbar, errors, isUserAuthenticated, toggleTheme };
   },
-
-  // mounted() {
-  //   this.loadData();
-  //   this.conversationTimer = setInterval(this.loadConversationData, 2000);
-  //   this.serversTimer = setInterval(this.loadServerData, 10000);
-  // },
-
-  // beforeUnmount() {
-  //   clearInterval(this.conversationTimer);
-  // },
 
   methods: {
 

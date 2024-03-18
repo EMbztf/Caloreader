@@ -26,7 +26,7 @@
                             :error-messages="passwordErrors"
                         ></v-text-field>
                         <v-card-actions>
-                            Doesn't have an account?&nbsp
+                            Don't have an account?&nbsp
                             <router-link to="/signup">Sign up</router-link>
                             <v-spacer></v-spacer>
                             <v-btn color="primary" type="submit">Login</v-btn>
@@ -67,48 +67,43 @@ setup() {
 
 },
 
+mounted() {
+    console.log(this.$cookies.keys());
+},
+
 methods: {
     async login() {
         this.usernameErrors = '';
         this.passwordErrors = '';
         await this.$refs.loginForm.validate()
         if (this.$refs.loginForm.isValid) {
-            const bodyFormData = new FormData();
-            bodyFormData.append('username', this.user.username);
-            bodyFormData.append('password', this.user.password);
+            const data = {
+                username: this.user.username,
+                password: this.user.password,
+            };
 
-            const url = import.meta.env.VITE_BACKEND_URL + '/login';
+            const url = import.meta.env.VITE_BACKEND_URL + '/api/auth/login';
 
             try {
                 const response = await axios.post(
                     url,
-                    bodyFormData,
+                    data,
                     {
+                        withCredentials: true
                 });
 
                 if(response.status === 200) {
-                    const data = response.data;
-                    let userData = {};
-                    userData.id = data.userData.id;
-                    userData.username = data.userData.username;
-                    userData.avatar = data.userData.avatar;
-                    userData.aboutMe = data.userData.about_me;
-                    userData.jwt = data.jwt;
-
-                    const user = useUserStore();
-                    user.setUserData(userData);
-
-                    this.$router.push('/friends');
+                    this.$router.push('/trainingSessionGenerator');
                 }
             } catch (error) {
-                if(error.response.status === 400) {
-                    const errors = JSON.parse(error.response.data.message);
-                    if(errors.username) {
-                        this.usernameErrors = errors.username;
-                    }
-                    if(errors.password) {
-                        this.passwordErrors = errors.password;
-                    }
+                if(error.response.status === 401) {
+                    this.passwordErrors = error.response.data.message
+                    // if(errors.username) {
+                    //     this.usernameErrors = errors.username;
+                    // }
+                    // if(errors.password) {
+                    //     this.passwordErrors = errors.password;
+                    // }
                 } else {
                     this.showSnackbarError(error);
                 }

@@ -26,24 +26,6 @@ public class MuscleGroup {
     @JsonIgnore
     private Set<Exercise> exercises;
 
-    @ManyToMany
-    @JoinTable(
-      name = "muscle_group_2_warmup",
-      joinColumns = @JoinColumn(name = "muscle_group_id"),
-      inverseJoinColumns = @JoinColumn(name = "warmup_id")
-    )
-    @JsonIgnore
-    private Set<Warmup> warmups;
-
-    @ManyToMany
-    @JoinTable(
-      name = "muscle_group_2_stretch",
-      joinColumns = @JoinColumn(name = "muscle_group_id"),
-      inverseJoinColumns = @JoinColumn(name = "stretch_id")
-    )
-    @JsonIgnore
-    private Set<Stretch> stretches;
-
     public MuscleGroup() {
 
     }
@@ -82,21 +64,5 @@ public class MuscleGroup {
 
     public void setExercises(Set<Exercise> exercises) {
         this.exercises = exercises;
-    }
-
-    public Set<Warmup> getWarmups() {
-        return warmups;
-    }
-
-    public void setWarmups(Set<Warmup> warmups) {
-        this.warmups = warmups;
-    }
-
-    public Set<Stretch> getStretches() {
-        return stretches;
-    }
-
-    public void setStretches(Set<Stretch> stretches) {
-        this.stretches = stretches;
     }
 }

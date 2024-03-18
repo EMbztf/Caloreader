@@ -1,72 +1,43 @@
 package com.example.dockertest.model.request;
 
+import java.util.List;
 
 public class TrainingSessionRequest {
-    private Integer calories;
-    private Integer muscleGroupId;
-    private Double weight;
-    private Integer height;
-    private Integer age;
-    private String gender;
 
-    public TrainingSessionRequest(Integer calories, Integer muscleGroupId, Double weight, Integer height, Integer age, String gender) {
-        this.calories = calories;
-        this.muscleGroupId = muscleGroupId;
-        this.weight = weight;
-        this.height = height;
-        this.age = age;
-        this.gender = gender;
-    }
+	private int calories;
+	private int muscleGroupId;
+	private List<Integer> exercises;
 
-    public TrainingSessionRequest() {
+	public TrainingSessionRequest() {
+	}
 
-    }
+	public TrainingSessionRequest(int calories, int muscleGroupId, List<Integer> exercises) {
+		this.calories = calories;
+		this.muscleGroupId = muscleGroupId;
+		this.exercises = exercises;
+	}
 
-    public Integer getCalories() {
-        return calories;
-    }
+	public int getCalories() {
+		return calories;
+	}
 
-    public void setCalories(Integer calories) {
-        this.calories = calories;
-    }
+	public void setCalories(int calories) {
+		this.calories = calories;
+	}
 
-    public Integer getMuscleGroupId() {
-        return muscleGroupId;
-    }
+	public int getMuscleGroupId() {
+		return muscleGroupId;
+	}
 
-    public void setMuscleGroupId(Integer muscleGroupId) {
-        this.muscleGroupId = muscleGroupId;
-    }
+	public void setMuscleGroupId(int muscleGroupId) {
+		this.muscleGroupId = muscleGroupId;
+	}
 
-    public Double getWeight() {
-        return weight;
-    }
+	public List<Integer> getExercises() {
+		return exercises;
+	}
 
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public Integer getHeight() {
-        return height;
-    }
-
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
+	public void setExercises(List<Integer> exercises) {
+		this.exercises = exercises;
+	}
 }

@@ -15,14 +15,15 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'
 //Vuetify experimental
 import { VDataTable } from "vuetify/labs/VDataTable";
 
-import '@mdi/font/css/materialdesignicons.css' 
+import '@mdi/font/css/materialdesignicons.css'
 
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
+import VueCookies from 'vue-cookies';
 
 
 const vuetify = createVuetify({
-  components: {...components, VDataTable},
+  components: {...components, VDataTable },
   directives,
   theme: {
     defaultTheme: 'dark'
@@ -35,7 +36,6 @@ const vuetify = createVuetify({
 
 const app = createApp(App);
 
-
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
@@ -44,5 +44,6 @@ app.use(router);
 
 // Vuetify
 app.use(vuetify);
+app.use(VueCookies);
 
 app.mount("#app");
