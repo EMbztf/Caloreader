@@ -21,7 +21,6 @@ public class User {
 
     @NotBlank
     @Column(name = "password")
-    @JsonIgnore
     private String password;
 
     @NotBlank

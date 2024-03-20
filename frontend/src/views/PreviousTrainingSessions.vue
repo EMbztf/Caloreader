@@ -2,7 +2,7 @@
     <v-container>
         <v-row justify="space-around">
             <v-card width="500" class="elevation-10 ma-4">
-                <v-toolbar title="Training Sessions">
+                <v-toolbar title="Your Workouts">
                 </v-toolbar>
                 <v-card-text>
                     <v-container v-for="trainingSession in trainingSessions">
@@ -98,13 +98,16 @@
             </v-dialog>
         </v-row>
     </v-container>
+    <BottomNav/>
 </template>
 
 <script>
 
 import axios from "axios";
+import BottomNav from "@/components/BottomNav.vue";
 
 export default {
+    components: { BottomNav },
     data() {
         return {
             trainingSessions: [],

@@ -3,6 +3,9 @@
     <v-row justify="space-around">
       <v-card width="500" class="elevation-10 ma-4">
         <v-toolbar title="Workouts">
+            <v-btn color="primary" @click="gotToYourWorkouts()">
+                Your Workouts
+            </v-btn>
         </v-toolbar>
         <v-card-text>
           <v-container v-for="muscleGroup in muscleGroups">
@@ -115,12 +118,16 @@
       </v-dialog>
     </v-row>
   </v-container>
+    <BottomNav/>
 </template>
 
 <script>
 import axios from "axios";
+import BottomNav from "@/components/BottomNav.vue";
 
 export default {
+    components: { BottomNav },
+
   data() {
     return {
       muscleGroups: [],
@@ -165,6 +172,9 @@ export default {
   },
 
   methods: {
+    gotToYourWorkouts() {
+      this.$router.push("/trainingSessions");
+    },
     async loadMuscleGroups() {
       const url = import.meta.env.VITE_BACKEND_URL + '/api/muscleGroups';
       axios.get(url).then((response) => {

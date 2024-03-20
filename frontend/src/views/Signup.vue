@@ -142,8 +142,10 @@ export default {
         clearErrors() {
             this.usernameErrors = '';
             this.passwordErrors = '';
-            this.aboutMeErrors = '';
-            this.profilePictureErrors = '';
+            this.sexErrors = '';
+            this.heightErrors = '';
+            this.weightErrors = '';
+            this.ageErrors = '';
         },
 
         async signUp() {

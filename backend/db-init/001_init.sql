@@ -61,11 +61,42 @@ CREATE TABLE training_session_2_exercise (
      FOREIGN KEY (exercise_id) REFERENCES exercise(id)
 );
 
+CREATE TABLE sports (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    MET DOUBLE NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
 INSERT INTO users
 (username, password, sex, height, weight, age)
 VALUES
-    ('admin', 'admin', 'female', 165, 55, 25),
-    ('hans', 'hans', 'male', 175, 75, 20);
+    ('admin', '$2a$10$0Ceaso/kuNAWp5HxPbwvaOx5utn.6.sTktd0a/VAg9cwyNfLKA.8y', 'female', 165, 55, 25), -- password test
+    ('hans', '$2a$10$0Ceaso/kuNAWp5HxPbwvaOx5utn.6.sTktd0a/VAg9cwyNfLKA.8y', 'male', 175, 75, 20); -- password test
+
+INSERT INTO sports
+    (name, MET, image_path)
+VALUES
+    ('Badminton', 5.5, 'badminton.jpg'),
+    ('Basketball', 6.5, 'basketball.jpg'),
+    ('Billiards', 2.5, 'billiards.jpg'),
+    ('Bowling', 3, 'Bowling.jpg'),
+    ('Boxing, Sparring', 7.8, 'boxing.jpg'),
+    ('Bicycling', 7.5, 'bicycling.jpg'),
+    ('Curling', 4, 'curling.jpg'),
+    ('Football', 8, 'football.jpg'),
+    ('Golf', 4.8, 'golf.jpg'),
+    ('Gymnastics', 3.8, 'gymnastics.jpg'),
+    ('Handball', 8, 'handball.jpg'),
+    ('Ice Hockey', 8, 'hockey.jpg'),
+    ('Rock climbing', 8, 'rock-climbing.jpg'),
+    ('Swimming', 8, 'swimming.jpg'),
+    ('Tennis', 7.3, 'tennis.jpg'),
+    ('Table Tennis', 4, 'table-tennis.jpg'),
+    ('Volleyball', 4, 'volleyball.jpg'),
+    ('Dancing', 7.8, 'dancing.jpg'),
+    ('Skating', 7, 'skating.jpg');
 
 INSERT INTO muscle_group
 (name, image_path)
@@ -149,7 +180,7 @@ VALUES
     ('Inchworms', 8, 3, 16, 'inchworms.mp4', null, false, false),
     ('Floor Y Raises', 7, 3, 16, 'floor-y-raises.mp4', null, false, false),
     ('Floor W Raises', 7, 3, 16, 'floor-w-raises.mp4', null, false, false),
-    ('Fllor T Raises', 7, 3, 16, 'floor-t-raises.mp4', null, false, false),
+    ('Floor T Raises', 7, 3, 16, 'floor-t-raises.mp4', null, false, false),
     ('Push-ups', 7, 3, 16, 'push-ups.mp4', null, false, false),
     ('Triceps dips', 6, 3.0, 16, 'floor-tricep-dips.mp4', null, false, false),
     ('Hover push-up', 7, 3, 16, 'hover-push-ups.mp4', null, false, false), -- 63

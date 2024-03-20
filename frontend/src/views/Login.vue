@@ -39,9 +39,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
-import { useErrorStore } from "../stores/errors"
-import { useUserStore } from "../stores/users"
+
 import axios from 'axios';
 
 export default {
@@ -67,9 +65,6 @@ setup() {
 
 },
 
-mounted() {
-    console.log(this.$cookies.keys());
-},
 
 methods: {
     async login() {

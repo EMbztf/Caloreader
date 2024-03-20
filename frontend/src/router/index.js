@@ -7,6 +7,7 @@ import PreviousTrainingSessions from "../views/PreviousTrainingSessions.vue";
 import NotFound from "../views/NotFound.vue";
 import Profile from "../views/Profile.vue";
 import axios from "axios";
+import Sports from "@/views/Sports.vue";
 
 async function isAuthenticated() {
   const url = import.meta.env.VITE_BACKEND_URL + '/api/check';
@@ -82,6 +83,14 @@ const router = createRouter({
       path: "/trainingSessionGenerator",
       name: "trainingSessionGenerator",
       component: TrainingSessionGenerator,
+      beforeEnter: async (to, from, next) => {
+        await checkAuth(to, from, next);
+      },
+    },
+    {
+      path: "/sports",
+      name: "sports",
+      component: Sports,
       beforeEnter: async (to, from, next) => {
         await checkAuth(to, from, next);
       },

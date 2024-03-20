@@ -1,6 +1,5 @@
 <template>
   <v-app-bar color="dark grey" density="compact">
-
     <v-toolbar-title>Calorie Tracker</v-toolbar-title>
 
     <v-toolbar-items>

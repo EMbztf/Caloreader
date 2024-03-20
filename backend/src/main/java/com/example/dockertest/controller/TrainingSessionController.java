@@ -12,6 +12,7 @@ import com.example.dockertest.repository.MuscleGroupRepository;
 import com.example.dockertest.repository.TrainingSessionRepository;
 import com.example.dockertest.repository.UserRepository;
 import com.example.dockertest.security.services.UserDetailsImpl;
+import com.example.dockertest.util.Calculator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -70,7 +71,6 @@ public class TrainingSessionController {
 	public ResponseEntity<List<TrainingSession>> getTrainingSessions() {
 		User authenticatedUser = getAuthenticatedUser();
 		List<TrainingSession> trainingSessions = trainingSessionRepository.findByUserId(authenticatedUser.getId());
-//		trainingSessions.forEach(trainingSession -> trainingSession.setExercises(null));
 		return ResponseEntity.ok(trainingSessions);
 	}
 
@@ -132,10 +132,10 @@ public class TrainingSessionController {
 				request.setCalories((int) (request.getCalories() - defaultCalories));
 
 				List<Exercise> sessionExercises = getTrainingSessionExercises(request, exercises, authenticatedUser);
-				double estimatedDuration = calculateEstimatedDuration(muscleGroup.get().getExercises().stream().toList());
-				double estimatedTime = calculateEstimatedTime(warmups, sessionExercises, stretches);
+				List<Exercise> allExercises = Stream.of(sessionExercises, defaultExercises).flatMap(Collection::stream).toList();
+				double estimatedDuration = calculateEstimatedDuration(allExercises);
 
-				response = new TrainingSessionResponse(estimatedTime, sessionExercises, warmups, stretches);
+				response = new TrainingSessionResponse(estimatedDuration, sessionExercises, warmups, stretches);
 			}
 
 			return new ResponseEntity<>(response, HttpStatus.OK);
@@ -212,6 +212,12 @@ public class TrainingSessionController {
 		}
 	}
 
+	/**
+	 * Calculate the estimated duration for a workout session based on the duration of exercises and rest times.
+	 *
+	 * @param exercises the list of exercises
+	 * @return the total estimated duration for the workout session
+	 */
 	private double calculateEstimatedDuration(List<Exercise> exercises) {
 		double estimatedDuration = 0;
 		double restTime = 30;
@@ -221,34 +227,10 @@ public class TrainingSessionController {
 			estimatedDuration += exercise.getDuration() * exercise.getRepetitions();
 		}
 
-		estimatedDuration += exercises.size() * restTime;
+		estimatedDuration += exercises.stream().filter(exercise -> !exercise.isStretch() || exercise.isWarmup()).count() * restTime;
 		estimatedDuration += (exercises.stream().filter(Exercise::isStretch).count() - 1) * stretchRestTime;
 
 		return estimatedDuration;
-	}
-
-	/**
-	 * Calculate the estimated time for a workout session based on the duration of exercises and rest times.
-	 *
-	 * @param  warmups    list of warm-up exercises
-	 * @param  exercises  list of main exercises
-	 * @param  stretches  list of stretching exercises
-	 * @return            the total estimated time for the workout session
-	 */
-	private double calculateEstimatedTime(List<Exercise> warmups, List<Exercise> exercises, List<Exercise> stretches) {
-		double estimatedTime = 0;
-		double restTime = 30;
-		double stretchRestTime = 10;
-		List<Exercise> allExercises = Stream.of(warmups, exercises, stretches).flatMap(Collection::stream).toList();
-		for (Exercise exercise : allExercises) {
-			estimatedTime += exercise.getDuration() * exercise.getRepetitions();
-		}
-
-		estimatedTime += warmups.size() * restTime;
-		estimatedTime += exercises.size() * restTime;
-		estimatedTime += (stretches.size() - 1) * stretchRestTime;
-
-		return estimatedTime;
 	}
 
 	/**
@@ -293,30 +275,10 @@ public class TrainingSessionController {
 		return sessionExercises;
 	}
 
-	private double calculateBMR(double weight, double height, int age, String gender) {
-		if (gender.equalsIgnoreCase("male")) {
-			return 66.4730 + (5.0033 * height) + (13.7516 * weight) - (6.7550 * age);
-		} else {
-			return 655.0955 + (1.8496 * height) + (9.5634 * weight) - (4.6756 * age);
-		}
-	}
-
-	private double calculateCorrectedMET(double averageMET, double weight, double height, int age, String gender) {
-		double bmr = calculateBMR(weight, height, age, gender);
-		double bmrMlKgMin = bmr / 1440 / 5 / weight * 1000;
-		return averageMET * 3.5 / bmrMlKgMin;
-	}
-
-	private double getBurnedCaloriesForExercise(Exercise exercise, double weight, double height, int age,
-		String gender) {
-		double correctedMET = calculateCorrectedMET(exercise.getMET(), weight, height, age, gender);
-		return correctedMET * 3.5 * weight / 200 * exercise.getDuration() * exercise.getRepetitions() / 60;
-	}
-
 	private double calculateBurnedCaloriesForExercise(Exercise exercise, User user) {
-		double correctedMET = calculateCorrectedMET(exercise.getMET(), user.getWeight(), user.getHeight(),
+		double correctedMET = Calculator.calculateCorrectedMET(exercise.getMET(), user.getWeight(), user.getHeight(),
 			user.getAge(), user.getSex());
-		return correctedMET * 3.5 * user.getWeight() / 200 * exercise.getDuration() * exercise.getRepetitions() / 60;
+		return correctedMET * 3.5 * user.getWeight() / 200 * (exercise.getDuration() / 60) * exercise.getRepetitions();
 	}
 
 	private double calculateCaloriesForExercises(List<Exercise> exercises, User user) {

@@ -1,4 +1,31 @@
 <template>
+  <v-app-bar>
+    <template v-slot:prepend>
+      <v-icon @click="openQuitConfirmationDialog()">
+        mdi-arrow-left
+      </v-icon>
+    </template>
+
+    <v-toolbar-title>Calorie Tracker</v-toolbar-title>
+
+  </v-app-bar>
+  <v-dialog
+      v-model="quitConfirmationDialog"
+      width="500"
+  >
+    <v-card>
+      <v-card-title>
+        Quit <Conf></Conf>
+      </v-card-title>
+      <v-card-text>
+        Do you really want to quit the workout?
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" @click="goToWorkouts()">Confirm</v-btn>
+        <v-btn @click="closeQuitConfirmationDialog()" color="red">Cancel</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
   <v-container>
     <v-row justify="center">
       <v-col cols="12" sm="6">
@@ -10,7 +37,6 @@
             {{ exercise.repetitions > 1 ? 'x ' + exercise.repetitions : formatTime(exercise.duration) }}
           </v-card-subtitle>
           <v-card-text>
-
 
           </v-card-text>
           <v-card-actions>
@@ -47,7 +73,8 @@ export default {
       currentExercise: 0,
       intervalId: null,
       timeInSeconds: 0,
-      timerActive: false
+      timerActive: false,
+      quitConfirmationDialog: false,
     };
   },
 
@@ -84,6 +111,15 @@ export default {
       axios.get(url).then((response) => {
         this.trainingSession = response.data;
       });
+    },
+    openQuitConfirmationDialog() {
+      this.quitConfirmationDialog = true;
+    },
+    closeQuitConfirmationDialog() {
+      this.quitConfirmationDialog = false;
+    },
+    goToWorkouts() {
+      this.$router.push('/trainingSessionGenerator');
     },
     goToNextExercise() {
         this.currentExercise++;
