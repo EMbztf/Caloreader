@@ -3,7 +3,7 @@
     <v-row justify="space-around">
       <v-card width="500" class="elevation-10 ma-4">
         <v-toolbar title="Sports">
-          <v-btn color="primary" @click="goToYourSportsSession()">
+          <v-btn color="primary" @click="goToYourSportPlans()">
             Your Sports Session
           </v-btn>
         </v-toolbar>
@@ -163,8 +163,8 @@ export default {
   },
 
   methods: {
-    goToYourSportsSession() {
-      this.$router.push("/sportsSession");
+    goToYourSportPlans() {
+      this.$router.push("/sportplans");
     },
 
     async loadSports() {
@@ -190,30 +190,15 @@ export default {
     },
 
     async storeSportsSession() {
-      const url = import.meta.env.VITE_BACKEND_URL + '/api/sportsSessions';
+      const url = import.meta.env.VITE_BACKEND_URL + '/api/sportsplan';
       const sportsSessionBody = {
+        calories: this.caloriesToBurn,
         sports: this.sportsSession.sports.map((sport) => sport.id),
       };
       axios.post(url, sportsSessionBody).then((response) => {
-        this.$router.push("/sportsSession/" + response.data.id);
+        this.$router.push("/sportplans");
       });
     },
-
-    // async storeTrainingSession() {
-    //   const url = import.meta.env.VITE_BACKEND_URL + '/api/trainingSessions';
-    //   let exercisesIds = this.trainingSession.warmups.map((warmup) => warmup.id);
-    //   exercisesIds = exercisesIds.concat(this.trainingSession.exercises.map((exercise) => exercise.id));
-    //   exercisesIds = exercisesIds.concat(this.trainingSession.stretches.map((stretch) => stretch.id));
-    //   const trainingSessionBody = {
-    //     calories: this.caloriesToBurn,
-    //     muscleGroupId: this.selectedMuscleGroup.id,
-    //     exercises: exercisesIds
-    //   };
-    //
-    //   axios.post(url, trainingSessionBody).then((response) => {
-    //     this.$router.push("/trainingSession/" + response.data.id);
-    //   });
-    // },
 
     formatTime(seconds) {
       let minutes = Math.floor(seconds / 60);

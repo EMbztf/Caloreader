@@ -10,14 +10,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "training_session")
-public class TrainingSession {
+@Table(name = "sports_plan")
+public class Sportsplan {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +24,9 @@ public class TrainingSession {
 
 	@Column(name = "name")
 	private String name;
+
+	@Column(name = "calories")
+	private int calories;
 
 	@Column(name = "estimated_duration")
 	private double estimatedDuration;
@@ -39,21 +41,21 @@ public class TrainingSession {
 
 	@ManyToMany
 	@JoinTable(
-		name = "training_session_2_exercise",
-		joinColumns = @JoinColumn(name = "training_session_id"),
-		inverseJoinColumns = @JoinColumn(name = "exercise_id")
+		name = "sports_plan_2_sports",
+		joinColumns = @JoinColumn(name = "sports_plan_id"),
+		inverseJoinColumns = @JoinColumn(name = "sports_id")
 	)
-	@OrderColumn(name = "date ASC")
-	private List<Exercise> exercises;
+	private List<Sports> sports;
 
-	public TrainingSession() {
+	public Sportsplan() {
 	}
 
-	public TrainingSession(String name, double estimatedDuration, User user, List<Exercise> exercises, Date date) {
+	public Sportsplan(String name, int calories, double estimatedDuration, User user, List<Sports> sports, Date date) {
 		this.name = name;
+		this.calories = calories;
 		this.estimatedDuration = estimatedDuration;
 		this.user = user;
-		this.exercises = exercises;
+		this.sports = sports;
 		this.date = date;
 	}
 
@@ -75,6 +77,14 @@ public class TrainingSession {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int getCalories() {
+		return calories;
+	}
+
+	public void setCalories(int calories) {
+		this.calories = calories;
 	}
 
 
@@ -107,12 +117,11 @@ public class TrainingSession {
 	}
 
 
-	public List<Exercise> getExercises() {
-		return exercises;
+	public List<Sports> getSports() {
+		return sports;
 	}
 
-
-	public void setExercises(List<Exercise> exercises) {
-		this.exercises = exercises;
+	public void setSports(List<Sports> sports) {
+		this.sports = sports;
 	}
 }

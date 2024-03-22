@@ -1,6 +1,5 @@
 package com.example.dockertest.model.request;
 
-import com.example.dockertest.model.dao.Sports;
 import java.util.List;
 
 public class PreviewSportsSessionRequest {

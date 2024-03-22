@@ -37,7 +37,7 @@
             >
                 <v-card>
                     <v-card-title>
-                        Calories to burn
+                        Delete Confirmation
                     </v-card-title>
                     <v-card-text>
                         Do you really want to delete this training session?

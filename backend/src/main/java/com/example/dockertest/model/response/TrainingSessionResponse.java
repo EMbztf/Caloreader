@@ -1,7 +1,6 @@
 package com.example.dockertest.model.response;
 
 import com.example.dockertest.model.dao.Exercise;
-
 import java.util.List;
 
 public class TrainingSessionResponse {

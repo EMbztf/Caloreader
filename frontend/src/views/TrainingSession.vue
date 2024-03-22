@@ -6,7 +6,7 @@
       </v-icon>
     </template>
 
-    <v-toolbar-title>Calorie Tracker</v-toolbar-title>
+    <v-toolbar-title>Caloreader</v-toolbar-title>
 
   </v-app-bar>
   <v-dialog
@@ -15,7 +15,7 @@
   >
     <v-card>
       <v-card-title>
-        Quit <Conf></Conf>
+        Quit
       </v-card-title>
       <v-card-text>
         Do you really want to quit the workout?
@@ -46,6 +46,8 @@
                 @click="goToPreviousExercise()"
             ></v-btn>
             <v-btn
+                @click="goToWorkouts()"
+                v-if="currentExercise === trainingSession.exercises.length - 1"
                 icon="mdi-check"
                 class="bg-blue"
             >

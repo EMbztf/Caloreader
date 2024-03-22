@@ -1,8 +1,8 @@
 package com.example.dockertest.controller;
 
+import com.example.dockertest.model.dao.User;
 import com.example.dockertest.model.request.LoginRequest;
 import com.example.dockertest.model.response.MessageResponse;
-import com.example.dockertest.model.dao.User;
 import com.example.dockertest.repository.UserRepository;
 import com.example.dockertest.security.jwt.JwtUtils;
 import com.example.dockertest.security.services.UserDetailsImpl;
@@ -16,7 +16,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController

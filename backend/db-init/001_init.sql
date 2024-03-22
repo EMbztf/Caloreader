@@ -56,6 +56,7 @@ CREATE TABLE training_session_2_exercise (
      id INT NOT NULL AUTO_INCREMENT,
      training_session_id INT NOT NULL,
      exercise_id INT NOT NULL,
+     date datetime default NOW(),
      PRIMARY KEY (id),
      FOREIGN KEY (training_session_id) REFERENCES training_session(id),
      FOREIGN KEY (exercise_id) REFERENCES exercise(id)
@@ -67,6 +68,26 @@ CREATE TABLE sports (
     MET DOUBLE NOT NULL,
     image_path VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
+);
+
+CREATE TABLE sports_plan (
+      id INT NOT NULL AUTO_INCREMENT,
+      name VARCHAR(255) NOT NULL,
+      calories INT NOT NULL,
+      estimated_duration DOUBLE NOT NULL,
+      user_id INT NOT NULL,
+      date DATE NOT NULL,
+      PRIMARY KEY (id),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE sports_plan_2_sports (
+     id INT NOT NULL AUTO_INCREMENT,
+     sports_plan_id INT NOT NULL,
+     sports_id INT NOT NULL,
+     PRIMARY KEY (id),
+     FOREIGN KEY (sports_plan_id) REFERENCES sports_plan(id),
+     FOREIGN KEY (sports_id) REFERENCES sports(id)
 );
 
 INSERT INTO users
